@@ -21,16 +21,16 @@ var jqOAuth = function jqOAuth(options) {
         this._resetData();
         this._updateStorage();
     }
-
-    if (options.csrfToken !== null) {
-        this._setCsrfHeader();
-    }
 }
 
 // Public methods
 
 jqOAuth.prototype.getAccessToken = function getAccessToken() {
     return this.data.accessToken;
+};
+
+jqOAuth.prototype.getRefreshToken = function getRefreshToken() {
+    return this.data.refreshToken;
 };
 
 jqOAuth.prototype.hasAccessToken = function hasAccessToken() {
@@ -45,8 +45,9 @@ jqOAuth.prototype.logout = function logout() {
     this._fireEvent("logout");
 };
 
-jqOAuth.prototype.login = function login(accessToken) {
+jqOAuth.prototype.login = function login(accessToken, refreshToken) {
     this.setAccessToken(accessToken);
+    this.setRefreshToken(refreshToken);
 
     this._activateInterceptor();
     this._fireEvent("login");
@@ -54,15 +55,12 @@ jqOAuth.prototype.login = function login(accessToken) {
 
 jqOAuth.prototype.setAccessToken = function setAccessToken(accessToken) {
     this.data.accessToken = accessToken;
-
     this._setAuthorizationHeader();
-    this._updateStorage();
 };
 
-jqOAuth.prototype.setCsrfToken = function setCsrfToken(csrfToken) {
-    this.options.csrfToken = csrfToken;
-
-    this._setCsrfHeader();
+jqOAuth.prototype.setRefreshToken = function setRefreshToken(refreshToken) {
+    this.data.refreshToken = refreshToken;
+    this._updateStorage();
 };
 
 // Private methods
@@ -143,7 +141,6 @@ jqOAuth.prototype._removeAjaxHeader = function _removeAjaxHeader(header) {
 
 jqOAuth.prototype._removeAllAjaxHeaders = function _removeAllAjaxHeaders() {
     this._removeAjaxHeader("Authorization");
-    this._removeAjaxHeader("X-CSRF-Token");
 };
 
 jqOAuth.prototype._resetData = function _resetData() {
@@ -156,7 +153,6 @@ jqOAuth.prototype._resetOptions = function _resetOptions() {
     this.options = {
         bufferInterval: 25,
         bufferWaitLimit: 500,
-        csrfToken: null,
         events: {},
         tokenName: 'jquery.oauth'
     };
@@ -174,10 +170,6 @@ jqOAuth.prototype._setAjaxHeader = function _setAjaxHeader(header, value) {
 
 jqOAuth.prototype._setAuthorizationHeader = function _setAuthorizationHeader() {
     this._setAjaxHeader("Authorization", "Bearer " + this.data.accessToken);
-};
-
-jqOAuth.prototype._setCsrfHeader = function _setCsrfHeader() {
-    this._setAjaxHeader("X-CSRF-Token", this.options.csrfToken);
 };
 
 jqOAuth.prototype._setRefreshingFlag = function _setRefreshingFlag(newFlag) {
