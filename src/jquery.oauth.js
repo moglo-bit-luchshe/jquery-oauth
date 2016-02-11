@@ -15,7 +15,7 @@ var jqOAuth = function jqOAuth(options) {
         this._getStoredData();
 
         if (this.hasAccessToken()) {
-            this.login(this.data.accessToken);
+            this.login(this.data.accessToken, this.data.refreshToken);
         }
     } else {
         this._resetData();
